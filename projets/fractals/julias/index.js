@@ -2,11 +2,12 @@
 let r,i=0;
 let c1=0;
 let c2=0;
+
 let exposant=0|0;
 
 rs.value=2;
-rslider.value=0;
-islider.value=0;
+rslider.value=-.123;
+islider.value=.745;
 rslider.oninput=()=>{
 	c1 = Number(rslider.value);
 	cmplx.innerHTML="Ensemble de Julia défini en "+c1+"+"+c2+"i.";
@@ -27,11 +28,8 @@ rs.oninput=()=>{
 }
 
 function Generer(){
-	
 	c1=Number(rslider.value);
 	c2=Number(islider.value);
-	//c1=-.123;
-	//c2=.745
 	let rouge = 0|0;
 	let vert = 0|0;
 	let bleu = 0|0;
@@ -39,7 +37,6 @@ function Generer(){
 	let X=0|0;
 	let Y=0|0;
 	let index=0|0;
-	let couleur=[];
 	let mod_z=0;
 
 	if(!exposant)exposant=2;
