@@ -18,18 +18,24 @@ d'approximations faites dans le calcul du coefficient
 https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Number/MAX_SAFE_INTEGER)
 */
 
+/*
+2023: Je sais maintenant (depuis longtemps) trouver les coefficients de manière efficace
+avec des techniques de programmation dynamique et des trucs et astuces propres au triangle de Pascal, mais cela
+ne résout pas le problème du dépassement d'entier. Et la performance de l'autre programme utilisant le théorème de Lucas reste 
+meilleure - inutile de stocker et manipuler des grands nombres pour ne considérer que leurs modulos à la fin. 
+*/
 const c=document.getElementById("c");
 const ctx=c.getContext("2d");
 const LIGNES=8;
 const COLONNES=8;
 
-/*//Le buffer/la liste  dans lequel/laquelle on va dessiner le triangle de Pascal
+/*Le buffer/la liste  dans lequel/laquelle on va dessiner le triangle de Pascal
 let imageData= new ImageData(COLONNES,LIGNES);
 let data=imageData.data;
 */
 /*
 Même fonction mais en deux implémentations différentes
-J'ai réalisé un test de performance disponible ici:https://jsperf.com/factorielle-recursive-iterative
+J'ai réalisé un test de performance disponible ici:https://jsperf.com/factorielle-recursive-iterative (lien cassé depuis)
 On utilise ici la fonction factorielleIterative
 seulement mais vous pouvez remplacer ses appels par 
 des appels à factorielleRecursive
@@ -46,18 +52,20 @@ function factorielleRecursive(n)
 }
 function factorielleIterative(n)
 {
-	let factorielle=1;
+	let factorielle=n;
 	if(n<0){
-		return;
+		alert("C'est illégal !");
+		return 0;
 	}
 	else if(n==0||n==1){
 		return 1;
 	}
-	for(let i=1;i<n+1;i++){
+	for(let i=2;i<n;i++){
 		factorielle*=i;
 	}
 	return factorielle;
 }
+console.log(factorielleIterative(0));
 
 function coefficientBinomial(n,p)
 {
@@ -71,17 +79,14 @@ let coef=0;
 let X=0;
 let Y=0;
 
-
+ctx.font="18px sans-serif";
 for(X=0;X<COLONNES;X++){
 	for(Y=0;Y<LIGNES;Y++){
 		coef=coefficientBinomial(Y,X);
 		//coef%2!=0&&coef>0&&ctx.fillRect(X*5,Y*5,4,4)
-		ctx.font="8px sans-serif";
-		ctx.fillText(coef,X*12,Y*12);
+		ctx.fillText(coef,X*32,Y*32+30);
 	}
 }
-
-
 
 		</script>
 	</body>
