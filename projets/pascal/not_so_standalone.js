@@ -17,12 +17,13 @@ const p = document.getElementById("txt");
 let check1 = document.getElementById("oui");
 let check2 = document.getElementById("non");
 check1.checked = false;
-/*-----------------Constantes utiles-----------*/
 
+/*-----------------Constantes utiles-----------*/
 const LIGNES = c.width;
 const COLONNES = c.height;
 const COTE_PIXEL = 1;
 let BASE = 2;//Pas vraiment une constante mais une variable globale dépendante de l'entrée utilisateur.
+
 //Fonction anonyme ne servant qu'à modifier la valeur de la base choisie.
 mslider.oninput = () => {
     BASE = mslider.value, p.innerHTML = "Triangle modulo " + BASE;
