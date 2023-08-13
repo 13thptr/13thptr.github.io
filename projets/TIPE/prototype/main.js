@@ -21,7 +21,7 @@ Promise.all([
 });
 */
 window.addEventListener("deviceorientation", (event) => {
-    ori.innerHTML=`${event.alpha.toFixed(2)}`// : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
+    ori.innerHTML=`${event.alpha.toFixed(2)}`; // : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
     oscillator.frequency.value=event.alpha.toFixed(2)*25;
 });
 
