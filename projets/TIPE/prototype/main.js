@@ -21,8 +21,15 @@ Promise.all([
 });
 */
 window.addEventListener("deviceorientation", (event) => {
-    ori.innerHTML=`${event.alpha.toFixed(2)}`; // : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
-    oscillator.frequency.value=event.alpha.toFixed(2)*25;
+    let angleZ=event.gamma.toFixed(2);
+    ori.innerHTML=`${angleZ}`; // : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
+    
+    if((angleZ<=90)&&(angleZ<=120)){
+        oscillator.frequency.value=440;
+    }
+    else{
+        oscillator.frequency.value=880;
+    }
 });
 
 let aX=0;
