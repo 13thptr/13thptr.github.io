@@ -2,7 +2,7 @@ const paX = document.getElementById("accX");
 const paY = document.getElementById("accY");
 const paZ = document.getElementById("accZ");
 
-const poZ = document.getElementById("oriZ");
+const ori = document.getElementById("ori");
 
 /*const sensor = new AbsoluteOrientationSensor();
 
@@ -21,7 +21,7 @@ Promise.all([
 });
 */
 window.addEventListener("deviceorientation", (event) => {
-    poZ.innerHTML=`${event.alpha.toFixed(2)} : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
+    ori.innerHTML=`${event.alpha.toFixed(2)}`// : ${event.beta.toFixed(2)} : ${event.gamma.toFixed(2)}`;
     oscillator.frequency.value=event.alpha.toFixed(2)*25;
 });
 
@@ -36,9 +36,9 @@ acl.addEventListener("reading", () =>
     aX=acl.x.toFixed(5);
     aY=acl.y.toFixed(5);
     aZ=acl.z.toFixed(5);
-    paX.innerHTML=`Accélération selon l'axe X: ${aX}`;
-    paY.innerHTML=`Accélération selon l'axe Y:${aY}`;
-    paZ.innerHTML=`Accélération selon l'axe Z:${aZ}`;
+    //paX.innerHTML=`Accélération selon l'axe X: ${aX}`;
+    //paY.innerHTML=`Accélération selon l'axe Y:${aY}`;
+    //paZ.innerHTML=`Accélération selon l'axe Z:${aZ}`;
 
         
     if(aX>3){}
