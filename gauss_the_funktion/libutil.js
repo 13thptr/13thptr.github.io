@@ -1,5 +1,5 @@
 /*
-2019 Mehdi Sahtali
+2019-2023 MS (github.com/13thptr)
 Ce fichier contient:
 	-La definition de la fonction "fleche" qui permet de représenter les vecteurs/nombres complexes dont on fait la somme
 	-Les fonctions qui gèrent les entrées des "sliders"
