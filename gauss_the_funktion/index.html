@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>FUNKTION DER GAUSS</title>
+</head>
+<body>
+	<canvas id="c1" style="position:absolute;left:0px;top:0px;z-index:0;"width="768" height="512"></canvas>
+	<canvas id="c2" style="position:absolute;left:0px;top:0px;z-index:1;"width="768" height="512"></canvas>
+	<button id="fl" style="position:absolute;left:10px;top:545px">Hide arrows</button>
+	<button id="cl" style="position:absolute;left:10px;top:575px">Show circles</button>
+	<p id="coefsp" style="position:absolute;left:10px;top:600px">Nombre de coefficients:1000 (Note:modifier les valeurs ci-dessous redémarre l'animation)</p>
+	<input id="coefsNb" type="range" min="1" max="1000" style="position:absolute;left:10px;top:645px">
+	<script src="libcmplx.js"></script>
+	<!--Points (échantillons de la fonction complexe)-->
+	<script src="coords.js"></script>
+	<!--Script pour la gestion des entrees/fichiers,etc.-->
+	<script src="libutil.js"></script>
+	<script>
+	let ZOOM=20;
+	let frame=0;
+	let t=0;
+	const CENTRE_X=100;
+	const CENTRE_Y=100;
+	//Todo:éliminer cette étape
+
+
+	let coefficients=TFD(reformate,1000);
+
+	
+
+	
+	function compare(a,b){
+		//console.log("Comparaison:");
+
+		let mod2a=a[0][0]*a[0][0]+a[0][1]*a[0][1];
+		let mod2b=b[0][0]*b[0][0]+b[0][1]*b[0][1];
+		//console.log(mod2a-mod2b);
+		return mod2b-mod2a;
+	}
+	coefficients.sort(compare);
+	coefficients=coefficients.map(e=>[e[0],argument(e[0]),e[1]]);
+
+	console.log(coefficients[0]);
+	const N=coefficients.length;
+	
+	//fond noir pour le canevas n°1 (le noir est la couleur par défaut de la méthode fillRect)
+	x1.fillRect(0,0,1024,1024);
+	//une fois le rectangle/fond affiché, on change la couleur de remplissage (jaune)
+	x1.fillStyle="#0dfca1";
+
+
+	let X=Y=precX=precY=0;
+	let angle=0;
+	x2.fillStyle="#fff";//blanc (flèches)
+	x2.strokeStyle="#0af6";//bleu clair(cercles)
+	x2.lineWidth=3;
+	function anim(){
+		x2.clearRect(0,0,c2.width,c2.height);//On efface le contenu du canevas
+		
+		angle=2*Math.PI*frame*VITESSE/N;
+		
+		let z=[0,0];
+
+		for(let n=0;n<N;n++){
+			let vecteur_courant=mult(coefficients[n][0],e(angle*coefficients[n][2]));
+			let mod=module(vecteur_courant);
+			let arg=Math.atan2(vecteur_courant[0],vecteur_courant[1]);
+
+			precX=z[0]+CENTRE_X;
+			precY=z[1]+CENTRE_Y;
+
+			cl_toggled&&n>0&&(x2.beginPath(),x2.arc(precX,precY,mod,0,7),x2.stroke())
+			//On déplace le centre du canevas sur le point courant qui va être la base de la flèche
+			x2.translate(precX,precY);
+			x2.rotate(-arg);
+			if(fl_toggled&&n>0){
+				x2.fill(new Path2D(fleche(0,0,mod)));//On dessine la flèche
+			}
+			
+			//On rétablit la matrice de transformation(->identité) du canevas
+			//ce qui annule la rotation et la translation appliquées auparavant
+			x2.setTransform(1,0,0,1,0,0);
+			
+			z=ajoute(z,vecteur_courant);
+			X=z[0]+CENTRE_X;
+			Y=z[1]+CENTRE_Y;
+		}
+		//Zoom avec drawImage (Manque de résolution, réfléchir à une approche vectorielle)
+		
+		/*
+		x2.strokeRect(X-36,Y-20,72,40);
+		c2.imageSmoothingEnabled = false;//Désactiver l'antialiasing
+		c1.imageSmoothingEnabled = false;
+		x2.drawImage(c2,X-36,Y-20,72,40,510,80,180,100);
+
+		x1.drawImage(c1,X-36,Y-20,72,40,510,80,180,100);
+		*/
+		
+		x1.fillRect(X,Y,3,3);
+		
+		frame+=2;
+		t=frame/60;
+		requestAnimationFrame(anim);
+	}
+	anim();
+	</script>
+</body>
+</html>
