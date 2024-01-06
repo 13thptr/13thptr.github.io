@@ -9,7 +9,7 @@
 	<canvas id="c2" style="position:absolute;left:0px;top:0px;z-index:1;"width="768" height="512"></canvas>
 	<button id="fl" style="position:absolute;left:10px;top:545px">Hide arrows</button>
 	<button id="cl" style="position:absolute;left:10px;top:575px">Show circles</button>
-	<p id="coefsp" style="position:absolute;left:10px;top:600px">Nombre de coefficients:1000 (Note:modifier les valeurs ci-dessous redémarre l'animation)</p>
+	<!--<p id="coefsp" style="position:absolute;left:10px;top:600px"> de coefficients:1000 (Note:modifier les valeurs ci-dessous redémarre l'animation)Nombre</p>-->
 	<input id="coefsNb" type="range" min="1" max="1000" style="position:absolute;left:10px;top:645px">
 	<script src="libcmplx.js"></script>
 	<!--Points (échantillons de la fonction complexe)-->
@@ -87,15 +87,7 @@
 			Y=z[1]+CENTRE_Y;
 		}
 		//Zoom avec drawImage (Manque de résolution, réfléchir à une approche vectorielle)
-		
-		/*
-		x2.strokeRect(X-36,Y-20,72,40);
-		c2.imageSmoothingEnabled = false;//Désactiver l'antialiasing
-		c1.imageSmoothingEnabled = false;
-		x2.drawImage(c2,X-36,Y-20,72,40,510,80,180,100);
-
-		x1.drawImage(c1,X-36,Y-20,72,40,510,80,180,100);
-		*/
+	
 		
 		x1.fillRect(X,Y,3,3);
 		
