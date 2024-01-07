@@ -24,26 +24,29 @@ function fleche(X,Y,u){
 Renvoie une liste contenant plus de points (interpolation linéaire)
 */
 function intercale(points){
-	for(i=0;i<points.length;i+=2){
+	let n = points.length;
+	let nouveau = new Array();
+	for(i=0;i<n-1;i+=2){
 		let X_prev=points[i][0];
 		let Y_prev=points[i][1];
-		let X_next=[i+1][0];
-		let Y_next=[i+1][1];
-		let avg_X=X_prev+X_next/2;
-		let avg_Y=Y_prev+Y_next/2;
-		points.splice(i+1,0,[avg_X,avg_Y])
+		let X_next=points[i+1][0];
+		let Y_next=points[i+1][1];
+		let X_avg=(X_prev+X_next)/2;
+		let Y_avg=(Y_prev+Y_next)/2;
+		
+		nouveau.push([X_prev,Y_prev],[X_avg,Y_avg],[X_next,Y_next]);
 	}
-	return points;
+	return nouveau;
 }
-
+console.log(intercale([[1,2],[3,4],[5,6]]));
 /*
 Obtention des contextes de dessin pour les deux élements <canvas>:
 il y a deux canevas transparents superposés afin de garder la trace de la pointe de la plus petite flèche (le dessin)
 -pas d'effacement,canevas n°1- tout en effaçant les cercles à chaque image-effacement,canevas n°2.
 */
-const x1=c1.getContext`2d`;
-const x2=c2.getContext`2d`;
-let NOMBRE_COEFS=1000;
+const x1 = c1.getContext`2d`;
+const x2 = c2.getContext`2d`;
+const NOMBRE_COEFS=1000;
 let VITESSE=1;
 	
 const bouton_fl=document.getElementById`fl`;
@@ -55,13 +58,18 @@ const bouton_cl=document.getElementById`cl`;
 let fl_toggled=true;
 let cl_toggled=false;
 
-
+//coords = intercale(coords);
+const NB_INTERCALAGES=5;
 
 let reformate=[];
 for(let i=0;i<coords.length;i+=2){
-	reformate.push([(coords[i])/2e3,(coords[i+1])/2e3]);
+	reformate.push([(coords[i])/2/NB_INTERCALAGES/NOMBRE_COEFS,(coords[i+1])/2/NB_INTERCALAGES/NOMBRE_COEFS]);
 }
-console.log(reformate)
+console.log(reformate);
+reformate = intercale(reformate);
+reformate = intercale(reformate);
+reformate = intercale(reformate);
+reformate = intercale(reformate);
 //Todo:ajouter échelle logarithmique pour le nombre de coefficients
 /*slider_coefs.oninput=()=>{
 	frame=0;

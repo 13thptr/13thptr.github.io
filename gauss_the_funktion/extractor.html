@@ -2,25 +2,20 @@
 <html>
 <body>
 	<canvas id="c1" width="512" height="512">
-	<canvas id="c2" style=" position:absolute;left:0px; top:0px;z-index:1"width="512" height="512"></canvas>
-		
 	</canvas>
 	<br>
-	<button id="b">Calculer les coefficients de Fourier</button>
+	<button id="b">Récupérer les coordonnées des points</button>
+	<button id="s">Sauvegarder les coordonnées</button>
 	<p id="coefs">Coefficients:</p>
 	<script src="libcmplx.js"></script>
 	<script>
-
 		const x1=c1.getContext`2d`;
-		const x2=c2.getContext`2d`;
 		let sorted_coords=[];
-		const COEFFICIENTS=1000;
 
 		let img=new Image();
 		img.src="GAUSS.jpg";
 		let largeur=0;
 		let hauteur=0;
-
 		img.onload=()=>{
 			console.log("chargement...");
 			largeur=img.width;
@@ -31,7 +26,6 @@
 			console.log("image chargée !");
 		}
 		c1.onclick=e=>{
-
 			let X=e.x;
 			let Y=e.y;
 			X-=7;
@@ -41,56 +35,26 @@
 			x1.fill();
 			console.log(X,Y);
 			sorted_coords.push([X,Y]);
-			
 		}
-		
+	
 		b.onclick=f=>{
-		
-		
-
 			coefs.innerHTML=sorted_coords.toString();
-			
-	
-			let frame=0;
-		let t=0;
-
-		let coefficients=[];
-		let CENTRE_X=256;
-		let CENTRE_Y=256;
-	
-		let reformate=[];
-		for(let i=0;i<sorted_coords.length;i+=2){
-			reformate.push([sorted_coords[i],sorted_coords[i+1]]);
 		}
+		s.onclick=f=>{
+		const link = document.createElement("a");
+		// Create a blog object with the file content which you want to add to the file
+		const file = new Blob([coefs.innerHTML], { type: 'text/plain' });
 
-		coefficients=TFD(sorted_coords,10);
+		// Add file content in the object URL
+		link.href = URL.createObjectURL(file);
 
-		console.log(coefficients)
+		// Add file name
+		link.download = "coords.txt";
 
-		let N=coefficients.length;
-
-		function u(){
-			c2.width|=0;
-	
-			let X=Y=0;
-			let z=[0,0];//Nombre complexe exprimant la position du nème cercle à un instant t
-			let angle=2*Math.PI*t/N;//inutile de tout recalculer dans la boucle principale
-			for(let n=0;n<N;n++){
-
-				z=ajoute(z,mult(coefficients[n],e(n*angle)));
-				X=z[0]/5;
-				Y=z[1]/5;
-			
-			}
-		x2.stroke();
-		console.log(X,Y)
-		x1.fillRect(X+CENTRE_X,Y+CENTRE_Y,1,1);
-		frame++;
-		t=frame/60;
-		requestAnimationFrame(u)
+		// Add click event to <a> tag to save file.
+		link.click();
+		URL.revokeObjectURL(link.href);
 		}
-	u();
-}
 
 	
 		
