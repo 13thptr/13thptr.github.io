@@ -26,20 +26,19 @@
 	const CENTRE_Y=c1.height/2;
 	//Todo:Transformée de Fourier rapide (FFT)
 
-	const N=1000;//Nombre de coefficients
-	let coefficients=TFD(reformate,N);
-	
+	//const NOMBRE_COEFS=1000;//Nombre de coefficients
+	let coefficients=TFD(reformate,NOMBRE_COEFS);
+	//Dans la fonction suivante, a et b  sont de la forme [z_n,n] où z_n est  un complexe sous forme de liste
+	//et n l'indice original du coefficient z_n (important pour la transformation inverse) 
 	function compare(a,b){
-		let mod2a=a[0][0]*a[0][0]+a[0][1]*a[0][1];
-		let mod2b=b[0][0]*b[0][0]+b[0][1]*b[0][1];
-		return mod2b-mod2a;
+		return moduleCarre(b[0])-moduleCarre(a[0]);
 	}
 	coefficients.sort(compare);
 	coefficients=coefficients.map(e=>[e[0],argument(e[0]),e[1]]);
 
 
-	
-	//fond noir pour le canevas n°1 (le noir est la couleur par défaut de la méthode fillRect)
+	x1.fillStyle="black"	
+	//fond noir pour le canevas n°1 (le noir est la couleur par défaut de la méthode fillRect- EDIT:mis quand même la précision)
 	x1.fillRect(0,0,1024,1024);
 	//une fois le rectangle/fond affiché, on change la couleur de remplissage 
 	//x1.fillStyle="#0dfca1";
@@ -52,11 +51,11 @@
 	x2.lineWidth=3;
 	function anim(){
 		x2.clearRect(0,0,c2.width,c2.height);//On efface le contenu du canevas
-		angle=2*Math.PI*frame*VITESSE/N;
+		angle=2*Math.PI*frame*VITESSE/NOMBRE_COEFS;
 		let z=[0,0];
 		let tmpX=X;
 		let tmpY=Y;
-		for(let n=1;n<N;n++){
+		for(let n=1;n<NOMBRE_COEFS;n++){
 			//On omet la composante continue qui n'est qu'un décalage.
 			let vecteur_courant=mult(coefficients[n][0],e(angle*coefficients[n][2]));
 			let mod=module(vecteur_courant);
@@ -89,7 +88,7 @@
 		//x1.fillRect(X,Y,3,3);
 
 		
-		frame+=2;
+		frame++;
 		t=frame/60;
 		requestAnimationFrame(anim);
 	}

@@ -46,8 +46,8 @@ il y a deux canevas transparents superposés afin de garder la trace de la point
 */
 const x1 = c1.getContext`2d`;
 const x2 = c2.getContext`2d`;
-const NOMBRE_COEFS=1000;
-let VITESSE=1;
+const NOMBRE_COEFS=250;
+let VITESSE=0.5;
 	
 const bouton_fl=document.getElementById`fl`;
 const bouton_cl=document.getElementById`cl`;
@@ -59,11 +59,11 @@ let fl_toggled=true;
 let cl_toggled=false;
 
 //coords = intercale(coords);
-const NB_INTERCALAGES=5;
-
+const NB_INTERCALAGES=6;
+const CSTE_REDIM=1e-3;
 let reformate=[];
 for(let i=0;i<coords.length;i+=2){
-	reformate.push([(coords[i])/2/NB_INTERCALAGES/NOMBRE_COEFS,(coords[i+1])/2/NB_INTERCALAGES/NOMBRE_COEFS]);
+	reformate.push([(coords[i])/2/NB_INTERCALAGES*CSTE_REDIM,(coords[i+1])/2/NB_INTERCALAGES*CSTE_REDIM]);
 }
 console.log(reformate);
 reformate = intercale(reformate);
