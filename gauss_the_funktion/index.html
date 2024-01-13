@@ -34,60 +34,57 @@
 		return moduleCarre(b[0])-moduleCarre(a[0]);
 	}
 	coefficients.sort(compare);
-	coefficients=coefficients.map(e=>[e[0],argument(e[0]),e[1]]);
-
-
 	x1.fillStyle="black"	
 	//fond noir pour le canevas n°1 (le noir est la couleur par défaut de la méthode fillRect- EDIT:mis quand même la précision)
 	x1.fillRect(0,0,1024,1024);
 	//une fois le rectangle/fond affiché, on change la couleur de remplissage 
-	//x1.fillStyle="#0dfca1";
 	x1.strokeStyle="#0dfca1";
 
-	let X=Y=precX=precY=0;
+	let X=Y=tmpX=tmpY=0;
 	let angle=0;
 	x2.fillStyle="#fff";//blanc (flèches)
 	x2.strokeStyle="#0af6";//bleu clair(cercles)
 	x2.lineWidth=3;
+	const TAU=2*Math.PI;
+
 	function anim(){
 		x2.clearRect(0,0,c2.width,c2.height);//On efface le contenu du canevas
-		angle=2*Math.PI*frame*VITESSE/NOMBRE_COEFS;
+		angle=TAU*frame*VITESSE/NOMBRE_COEFS;
 		let z=[0,0];
-		let tmpX=X;
-		let tmpY=Y;
+		//let tmpX=X;
+		//let tmpY=Y;
 		for(let n=1;n<NOMBRE_COEFS;n++){
 			//On omet la composante continue qui n'est qu'un décalage.
-			let vecteur_courant=mult(coefficients[n][0],e(angle*coefficients[n][2]));
+			let vecteur_courant=mult(coefficients[n][0],e(angle*coefficients[n][1]));
 			let mod=module(vecteur_courant);
-			let arg=Math.atan2(vecteur_courant[0],vecteur_courant[1]);
+			let arg=argument(vecteur_courant);
 
-			precX=z[0]+CENTRE_X;
-			precY=z[1]+CENTRE_Y;
+			tmpX=z[0]+CENTRE_X;
+			tmpY=z[1]+CENTRE_Y;
 
-			cl_toggled&&(x2.beginPath(),x2.arc(precX,precY,mod,0,7),x2.stroke())
-			//On déplace le centre du canevas sur le point courant qui va être la base de la flèche
-			x2.translate(precX,precY);
-			x2.rotate(-arg);
-			if(fl_toggled){
-				x2.fill(new Path2D(fleche(0,0,mod)));//On dessine la flèche
+			if(cl_toggled){
+				x2.beginPath();
+				x2.arc(tmpX,tmpY,mod,0,TAU);
+				x2.stroke();
 			}
-			
-			//On rétablit la matrice de transformation(->identité) du canevas
-			//ce qui annule la rotation et la translation appliquées auparavant
-			x2.setTransform(1,0,0,1,0,0);
-			
+			if(fl_toggled){
+				//On déplace le centre du canevas sur le point courant qui va être la base de la flèche
+				x2.translate(tmpX,tmpY);
+				x2.rotate(arg-Math.PI/2);//Elucider la constante ?-> Liée à l'inversion du repère ? ((Oy) vers le bas )
+				x2.fill(new Path2D(fleche(0,0,mod)));//On dessine la flèche
+				//On rétablit la matrice de transformation(->identité) du canevas
+				//ce qui annule la rotation et la translation appliquées auparavant
+				x2.setTransform(1,0,0,1,0,0);
+			}
 			z=ajoute(z,vecteur_courant);
-			X=z[0]+CENTRE_X;
-			Y=z[1]+CENTRE_Y;
 		}
-		//Zoom avec drawImage (Manque de résolution, réfléchir à une approche vectorielle)
+		//Tracé d'un segment entre M(t) et M(t+dt).
 		x1.beginPath();
-		x1.moveTo(tmpX,tmpY);
+		x1.moveTo(X,Y);
+		X=z[0]+CENTRE_X;
+		Y=z[1]+CENTRE_Y;
 		x1.lineTo(X,Y);
 		x1.stroke();
-		//x1.fillRect(X,Y,3,3);
-
-		
 		frame++;
 		t=frame/60;
 		requestAnimationFrame(anim);

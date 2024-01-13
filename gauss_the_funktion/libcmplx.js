@@ -7,39 +7,54 @@ puissance=(z,r)=>{
 	return tmp;
 }
 
-moduleCarre=complexe=>{
-	//cette fonction renvoie le carré du module du nombre complexe d'entrée
-	let r = complexe[0];
-	let i = complexe[1]; 
-	return r**2+i**2;
+/*exp_s=r=>{
+	//r est un réel
+	const ITER=200;
+	let fact =1;
+	let res=1;
+	let pow=1;
+	for(let i=1;i<=ITER;i++){
+		let tmp_f=fact*i;
+		if(!isNaN(tmp_f)&&isFinite(tmp_f)){
+			fact=tmp_f;
+		}
+		let tmp_r=pow*r;
+		if(!isNaN(tmp_r)&&isFinite(tmp_r)){
+			pow=tmp_r;
+		}
+		res+=pow/fact;
+	}
+	return res;
 }
-module=complexe=>{
-	//cette fonction renvoie le  module du nombre complexe d'entrée
-	let r = complexe[0];
-	let i = complexe[1];
-	return Math.sqrt(r**2+i**2);;
-}
-argument=complexe=>{
-	return Math.atan2(complexe[1],complexe[0]);
+console.log(exp_s(35),Math.exp(35));
+*/
+
+
+puissance2=(z,r)=>{
+	//Comparer la performance avec "puissance"
+	return mult(Math.exp(r*z[0]),e(r*z[1]));
 }
 
+moduleCarre=z=>{
+	let r = z[0];
+	let i = z[1]; 
+	return r**2+i**2;
+}
+module=z=>{
+	return Math.sqrt(moduleCarre(z));
+}
+argument=z=>{
+	return Math.atan2(z[1],z[0]);
+}
 mult=(z1,z2)=>{
-	let x1 = z1[0];
-	let x2 = z2[0];
-	let y1 = z1[1];
-	let y2 = z2[1];
-	//z1*z2=(x1*x2)-(y1*y2)+i(x1*y2+y1*x2)
+	let x1 = z1[0],x2 = z2[0];
+	let y1 = z1[1],y2 = z2[1];
 	return [(x1*x2)-(y1*y2),(x1*y2+y1*x2)];
 }
 ajoute=(z1,z2)=>{
-	let r1=z1[0];
-	let r2=z2[0];
-	let i1=z1[1];
-	let i2=z2[1];
-
-	let res = [r1+r2,i1+i2];
-	return res;
-
+	let r1=z1[0],r2=z2[0];
+	let i1=z1[1],i2=z2[1];
+	return [r1+r2,i1+i2];
 }
 //Exponentielle complexe (formule d'Euler)
 function e(angle){
@@ -48,24 +63,14 @@ function e(angle){
 function TFD(fonction,N){
 	let nombre_echantillons=fonction.length;
 	let liste_coefs=[];
-	//let liste_rayons=[];
-	//let liste_phases=[];
-	//N est le nombre de coefficients voulu
 	for(let n=-N;n<N;n++){
 		let cn=[0,0];
 		for(let i=0;i<nombre_echantillons;i++){
 			cn=ajoute(cn,mult(fonction[i],e(-2*Math.PI*i*n/nombre_echantillons)));
 		}
-		//let R=module(cn);
-		//let θ=Math.atan2(cn[1],cn[0]);
-		//liste_phases.push(θ);
-		//liste_rayons.push(R);
 		let l=[cn,n];
 		liste_coefs.push(l);
-
 	}
-	
-	//return [liste_coefs,liste_rayons,liste_phases];
 	return liste_coefs;
 }
 
