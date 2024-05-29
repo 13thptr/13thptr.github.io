@@ -33,7 +33,6 @@ function intercale(points){
 		let Y_next=points[i+1][1];
 		let X_avg=(X_prev+X_next)/2;
 		let Y_avg=(Y_prev+Y_next)/2;
-		
 		nouveau.push([X_prev,Y_prev],[X_avg,Y_avg],[X_next,Y_next]);
 	}
 	return nouveau;

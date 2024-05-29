@@ -7,28 +7,6 @@ puissance=(z,r)=>{
 	return tmp;
 }
 
-/*exp_s=r=>{
-	//r est un réel
-	const ITER=200;
-	let fact =1;
-	let res=1;
-	let pow=1;
-	for(let i=1;i<=ITER;i++){
-		let tmp_f=fact*i;
-		if(!isNaN(tmp_f)&&isFinite(tmp_f)){
-			fact=tmp_f;
-		}
-		let tmp_r=pow*r;
-		if(!isNaN(tmp_r)&&isFinite(tmp_r)){
-			pow=tmp_r;
-		}
-		res+=pow/fact;
-	}
-	return res;
-}
-console.log(exp_s(35),Math.exp(35));
-*/
-
 
 puissance2=(z,r)=>{
 	//Comparer la performance avec "puissance"
