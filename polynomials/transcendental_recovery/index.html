@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcendental Polynomial Recovery</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Transcendental Polynomial Recovery</h1>
+        
+        <div class="nav-links">
+            <a href="recovery.html">Two Integer Method</a>
+            <a href="evaluator.html">Polynomial Evaluator</a>
+        </div>
+        
+        <div class="explanation">
+            <h2>How It Works</h2>
+            <p>This advanced method attempts to recover polynomial coefficients using only <strong>one</strong> evaluation at a transcendental number!</p>
+            
+            <p><strong>The Challenge:</strong> Unlike integers, transcendental numbers have infinite, non-repeating decimal expansions. Different polynomials will produce different results, but we need enough precision to distinguish between them.</p>
+            
+            <p><strong>The Strategy:</strong> We systematically search through all possible polynomials of increasing degree, evaluating each at the chosen transcendental number and comparing the results up to a specified precision.</p>
+            
+            <div class="formula">
+                Search space: degree 0 → 1 → 2 → ... until match found
+            </div>
+            
+            <p><strong>Theoretical guarantee:</strong> With infinite precision, exactly one polynomial should match. With finite precision, we may find multiple candidates.</p>
+        </div>
+
+        <div class="instruction">
+            <h2>Instructions</h2>
+            <p><strong>Step 1:</strong> Use the polynomial evaluator to generate a polynomial with non-negative integer coefficients.</p>
+            <p><strong>Step 2:</strong> Choose a transcendental number from the dropdown or enter a custom value.</p>
+            <p><strong>Step 3:</strong> Evaluate your polynomial at the transcendental number to get P(transcendental).</p>
+            <p><strong>Step 4:</strong> Enter the result below along with search parameters to recover the coefficients!</p>
+        </div>
+
+        <div class="section">
+            <h2>Transcendental Number Selection</h2>
+            
+            <label for="transcendental-select">Choose a transcendental number:</label>
+            <select id="transcendental-select">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+            <div class="transcendental-info" id="transcendental-info"></div>
+            
+            <div class="grid-2" style="margin-top: 15px;">
+                <div>
+                    <label for="transcendental-value-input">Or enter custom transcendental value:</label>
+                    <input type="text" id="transcendental-value-input" placeholder="Enter transcendental number" style="font-family: monospace;">
+                </div>
+                <div>
+                    <label for="transcendental-result-input">P(transcendental) = </label>
+                    <input type="text" id="transcendental-result-input" placeholder="Enter evaluation result" style="font-family: monospace;">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Search Parameters</h2>
+            
+            <div class="grid-3">
+                <div>
+                    <label for="max-degree-input">Maximum degree to search:</label>
+                    <input type="number" id="max-degree-input" min="0" max="10" value="3">
+                </div>
+                <div>
+                    <label for="max-coeff-input">Maximum coefficient value:</label>
+                    <input type="number" id="max-coeff-input" min="0" max="100" value="10">
+                </div>
+                <div>
+                    <label for="precision-digits-input">Precision (digits):</label>
+                    <input type="number" id="precision-digits-input" min="5" max="50" value="15">
+                </div>
+            </div>
+            
+            <div id="auto-bounds-info" class="status waiting">
+                Enter transcendental value to see automatic coefficient bounds
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="startSearch()" id="start-search-btn">Start Search</button>
+                <button onclick="stopSearch()" id="stop-search-btn" disabled>Stop Search</button>
+                <button onclick="continueSearch()" id="continue-search-btn" disabled>Continue Search</button>
+            </div>
+        </div>
+
+        <div class="section" id="search-progress-section" style="display: none;">
+            <h2>Search Progress</h2>
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span>Current Degree: <span id="current-degree">0</span></span>
+                    <span>Progress: <span id="degree-progress">0</span>%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-status" id="search-status">Initializing...</div>
+            </div>
+        </div>
+
+        <div class="section" id="results-section">
+            <h2>Search Results</h2>
+            <div id="candidates-found" class="result-box">
+                <h3>Matching Candidates</h3>
+                <div id="candidates-list">
+                    <p>No search performed yet...</p>
+                </div>
+                <div id="uniqueness-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="transcendental_constants.js"></script>
+    <script src="polynomial_utils.js"></script>
+    <script src="search_worker.js"></script>
+    <script src="transcendental_recovery_js.js"></script>
+</body>
+</html>

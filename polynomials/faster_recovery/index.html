@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Coefficient Recovery from Liouville's Number</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/decimal.js/10.4.3/decimal.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Polynomial Coefficient Recovery</h1>
+            <p class="subtitle">Recover natural number coefficients from polynomial evaluation at Liouville's number</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h2>Configuration</h2>
+                
+                <div class="input-group">
+                    <label for="liouville-evaluation">Polynomial Evaluation at Liouville's Number:</label>
+                    <textarea id="liouville-evaluation" placeholder="Enter the decimal representation of P(L) where L is Liouville's number..."></textarea>
+                    <small>Enter the truncated decimal representation of the polynomial evaluated at Liouville's number</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="precision">Computation Precision (digits):</label>
+                    <input type="number" id="precision" value="50" min="10" max="200">
+                    <small>Number of decimal digits to use in computations</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="epsilon">Epsilon (comparison tolerance):</label>
+                    <input type="number" id="epsilon" value="1e-20" step="1e-20" min="1e-50">
+                    <small>Tolerance for matching evaluations</small>
+                </div>
+
+                <div class="search-strategy">
+                    <h3>Search Strategy</h3>
+                    <div class="strategy-options">
+                        <label>
+                            <input type="radio" name="strategy" value="bounded" checked>
+                            Bounded Search
+                        </label>
+                        <label>
+                            <input type="radio" name="strategy" value="infinite">
+                            Infinite Enumeration (Zig-zag)
+                        </label>
+                    </div>
+                </div>
+
+                <div id="bounded-options" class="strategy-config">
+                    <div class="input-group">
+                        <label for="max-degree">Maximum Degree:</label>
+                        <input type="number" id="max-degree" value="5" min="0" max="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="max-coeff">Maximum Coefficient Value:</label>
+                        <input type="number" id="max-coeff" value="10" min="1" max="100">
+                    </div>
+                </div>
+
+                <div id="infinite-options" class="strategy-config" style="display: none;">
+                    <div class="input-group">
+                        <label for="batch-size">Batch Size per Degree:</label>
+                        <input type="number" id="batch-size" value="1000" min="100" max="10000">
+                        <small>Number of polynomials to test per degree before moving to next</small>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button id="start-search">Start Search</button>
+                    <button id="stop-search" disabled>Stop Search</button>
+                    <button id="clear-results">Clear Results</button>
+                </div>
+            </section>
+
+            <section class="progress-section">
+                <h2>Search Progress</h2>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progress-percentage">0%</span>
+                        <span id="progress-info">Ready to start</span>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Current Degree:</span>
+                        <span id="current-degree">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Polynomials Tested:</span>
+                        <span id="polynomials-tested">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Time Elapsed:</span>
+                        <span id="time-elapsed">0s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Rate:</span>
+                        <span id="test-rate">0 poly/s</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="results-section">
+                <h2>Results</h2>
+                <div id="results-container">
+                    <p class="no-results">No results yet. Configure parameters and start the search.</p>
+                </div>
+            </section>
+
+            <section class="liouville-info">
+                <h2>About Liouville's Number</h2>
+                <p>
+                    Liouville's number is a transcendental number defined as:
+                    <br>
+                    <code>L = Σ(n=1 to ∞) 10^(-n!)</code>
+                    <br>
+                    ≈ 0.11000100000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000100...
+                </p>
+                <p>
+                    This number has the special property that it can be approximated very closely by rational numbers, 
+                    making it useful for polynomial coefficient recovery algorithms.
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <script src="polynomial-search.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

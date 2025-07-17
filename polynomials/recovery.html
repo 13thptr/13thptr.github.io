@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Coefficient Recovery Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #2d3748;
+            border-bottom: 2px solid #4299e1;
+            padding-bottom: 10px;
+        }
+
+        .explanation {
+            background: #e6fffa;
+            border: 2px solid #4fd1c7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .explanation h2 {
+            color: #234e52;
+            border-bottom: 2px solid #4fd1c7;
+        }
+
+        .explanation p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .explanation .formula {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #b2f5ea;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .instruction {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .instruction h2 {
+            color: #c53030;
+            border-bottom: 2px solid #fed7d7;
+        }
+
+        .instruction p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .instruction strong {
+            color: #c53030;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        button {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+        }
+
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .polynomial-display {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .result-box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .result-box h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+
+        .result-value {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #cbd5e0;
+            margin: 10px 0;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            word-break: break-all;
+        }
+
+        .steps {
+            background: #f0f9ff;
+            border: 2px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .steps h4 {
+            margin-top: 0;
+            color: #0369a1;
+        }
+
+        .steps ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .steps li {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .success {
+            color: #2f855a;
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #e53e3e;
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .status {
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .status.ready {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .status.waiting {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .copy-btn {
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+            margin-top: 5px;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .copy-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Polynomial Coefficient Recovery Game</h1>
+        
+        <div class="explanation">
+            <h2>How It Works</h2>
+            <p>This mathematical "game" demonstrates how you can recover the coefficients of a polynomial with positive integer coefficients using just two strategic evaluations!</p>
+            
+            <p><strong>The Magic:</strong> For a polynomial P(x) with positive integer coefficients:</p>
+            <div class="formula">
+                If we know P(1) and P(P(1)+1), we can recover all coefficients!
+            </div>
+            
+            <p><strong>Why it works:</strong> Since all coefficients are positive integers, each coefficient is bounded by P(1). When we evaluate P(P(1)+1), we're essentially expressing the result in base P(1)+1, and the "digits" of this representation are exactly the coefficients!</p>
+        </div>
+
+        <div class="instruction">
+            <h2>Instructions</h2>
+            <p><strong>Step 1:</strong> Use the polynomial evaluator to generate a polynomial with positive integer coefficients.</p>
+            <p><strong>Step 2:</strong> Evaluate your polynomial at x = 1 to get P(1).</p>
+            <p><strong>Step 3:</strong> Evaluate your polynomial at x = P(1) + 1 to get P(P(1)+1).</p>
+            <p><strong>Step 4:</strong> Enter both values below to recover the original coefficients!</p>
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Enter P(1)</h2>
+            <div class="status waiting" id="step1-status">Enter the value of P(1) from your polynomial evaluation</div>
+            <label for="p1-input">P(1) = </label>
+            <input type="number" id="p1-input" placeholder="Enter P(1)" min="1">
+            <button onclick="processP1()">Process P(1)</button>
+            
+            <div id="p1-result" class="result-box" style="display: none;">
+                <h3>P(1) Analysis</h3>
+                <div class="result-value" id="p1-value"></div>
+                <p>Since all coefficients are positive integers, each coefficient ≤ P(1) = <span id="p1-bound"></span>.</p>
+                <p>This means we can represent P(P(1)+1) in base P(1)+1 = <span id="base-value"></span>.</p>
+                <p>Next, evaluate your polynomial at x = <span id="next-x"></span>.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Enter P(P(1)+1)</h2>
+            <div class="status waiting" id="step2-status">Waiting for P(1) to be processed...</div>
+            <label for="p-p1plus1-input">P(<span id="evaluation-point">P(1)+1</span>) = </label>
+            <input type="number" id="p-p1plus1-input" placeholder="Enter P(P(1)+1)" min="1" disabled>
+            <button onclick="recoverCoefficients()" disabled id="recovery-btn">Recover Coefficients!</button>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Coefficient Recovery</h2>
+            <div class="status waiting" id="step3-status">Waiting for both evaluations...</div>
+            
+            <div id="recovery-result" class="result-box" style="display: none;">
+                <h3>Recovery Process</h3>
+                <div class="steps" id="recovery-steps"></div>
+                
+                <h3>Recovered Polynomial</h3>
+                <div class="polynomial-display" id="recovered-polynomial"></div>
+                
+                <h3>Recovered Coefficients</h3>
+                <div class="result-value" id="coefficients-result"></div>
+                <button class="copy-btn" onclick="copyToClipboard('coefficients-result')">Copy Coefficients</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Efficiency Analysis</h2>
+            <div id="efficiency-analysis" class="result-box" style="display: none;">
+                <h3>Storage Comparison</h3>
+                <div class="steps" id="efficiency-steps"></div>
+                
+                <h3>Summary</h3>
+                <div class="result-value" id="efficiency-summary"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let p1Value = 0;
+
+        function processP1() {
+            const p1Input = document.getElementById('p1-input').value;
+            
+            if (!p1Input || p1Input <= 0) {
+                alert('Please enter a positive integer for P(1)');
+                return;
+            }
+            
+            p1Value = parseInt(p1Input);
+            const base = p1Value + 1;
+            const nextX = p1Value + 1;
+            
+            // Show P(1) result
+            document.getElementById('p1-result').style.display = 'block';
+            document.getElementById('p1-value').textContent = `P(1) = ${p1Value}`;
+            document.getElementById('p1-bound').textContent = p1Value;
+            document.getElementById('base-value').textContent = base;
+            document.getElementById('next-x').textContent = nextX;
+            
+            // Update step 1 status
+            document.getElementById('step1-status').textContent = 'P(1) processed successfully!';
+            document.getElementById('step1-status').className = 'status ready';
+            
+            // Enable step 2
+            document.getElementById('step2-status').textContent = `Ready! Enter P(${nextX})`;
+            document.getElementById('step2-status').className = 'status ready';
+            document.getElementById('evaluation-point').textContent = nextX;
+            document.getElementById('p-p1plus1-input').disabled = false;
+            document.getElementById('recovery-btn').disabled = false;
+        }
+
+        function recoverCoefficients() {
+            const p_p1plus1_input = document.getElementById('p-p1plus1-input').value;
+            
+            if (!p_p1plus1_input || p_p1plus1_input <= 0) {
+                alert('Please enter a positive integer for P(P(1)+1)');
+                return;
+            }
+            
+            const p_p1plus1_value = parseInt(p_p1plus1_input);
+            const base = p1Value + 1;
+            
+            // Convert to base P(1)+1
+            const recoveredCoeffs = [];
+            let remaining = p_p1plus1_value;
+            
+            let steps = `<h4>Base ${base} Conversion Process:</h4><ol>`;
+            steps += `<li>P(${base}) = ${p_p1plus1_value}</li>`;
+            
+            let stepNum = 2;
+            while (remaining > 0) {
+                const digit = remaining % base;
+                recoveredCoeffs.unshift(digit);
+                const quotient = Math.floor(remaining / base);
+                steps += `<li>Step ${stepNum}: ${remaining} ÷ ${base} = ${quotient} remainder ${digit}</li>`;
+                remaining = quotient;
+                stepNum++;
+            }
+            
+            steps += `<li>Reading remainders from bottom to top: [${recoveredCoeffs.join(', ')}]</li>`;
+            steps += '</ol>';
+            
+            // Display results
+            document.getElementById('step3-status').textContent = 'Coefficient recovery complete!';
+            document.getElementById('step3-status').className = 'status ready';
+            document.getElementById('recovery-result').style.display = 'block';
+            document.getElementById('recovery-steps').innerHTML = steps;
+            
+            // Display recovered polynomial
+            const recoveredDisplay = document.getElementById('recovered-polynomial');
+            if (recoveredCoeffs.length > 0) {
+                displayRecoveredPolynomial(recoveredCoeffs);
+                document.getElementById('coefficients-result').textContent = recoveredCoeffs.join(',');
+                
+                // Show efficiency analysis
+                showEfficiencyAnalysis(recoveredCoeffs, p1Value, p_p1plus1_value);
+            } else {
+                recoveredDisplay.innerHTML = '<span class="error">No coefficients recovered</span>';
+                document.getElementById('coefficients-result').textContent = 'Error: No coefficients';
+            }
+        }
+
+        function displayRecoveredPolynomial(coeffs) {
+            const display = document.getElementById('recovered-polynomial');
+            const degree = coeffs.length - 1;
+            let latex = '';
+            
+            for (let i = 0; i < coeffs.length; i++) {
+                const coeff = coeffs[i];
+                const power = degree - i;
+                
+                if (i > 0) latex += ' + ';
+                
+                if (power === 0) {
+                    latex += coeff.toString();
+                } else if (power === 1) {
+                    if (coeff === 1) {
+                        latex += 'x';
+                    } else {
+                        latex += coeff + 'x';
+                    }
+                } else {
+                    if (coeff === 1) {
+                        latex += 'x^{' + power + '}';
+                    } else {
+                        latex += coeff + 'x^{' + power + '}';
+                    }
+                }
+            }
+            
+            katex.render(latex, display);
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const button = element.nextElementSibling;
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                });
+            } else {
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const button = element.nextElementSibling;
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }
+        }
+
+        function showEfficiencyAnalysis(coeffs, p1, p_p1plus1) {
+            const numCoeffs = coeffs.length;
+            const maxCoeff = Math.max(...coeffs);
+            
+            // Calculate bits needed for direct storage
+            const bitsPerCoeff = Math.ceil(Math.log2(maxCoeff + 1));
+            const directBits = numCoeffs * bitsPerCoeff;
+            
+            // Calculate bits needed for our method
+            const bitsP1 = Math.ceil(Math.log2(p1 + 1));
+            const bitsP_P1plus1 = Math.ceil(Math.log2(p_p1plus1 + 1));
+            const methodBits = bitsP1 + bitsP_P1plus1;
+            
+            // Calculate theoretical minimum (assuming we know the degree)
+            const theoreticalMin = Math.ceil(Math.log2(Math.pow(p1 + 1, numCoeffs)));
+            
+            // Calculate efficiency ratio
+            const efficiency = (directBits / methodBits * 100).toFixed(1);
+            const theoreticalEfficiency = (theoreticalMin / methodBits * 100).toFixed(1);
+            
+            let analysis = `<h4>Bit Storage Analysis:</h4><ol>`;
+            analysis += `<li><strong>Direct storage:</strong> ${numCoeffs} coefficients × ${bitsPerCoeff} bits each = ${directBits} bits</li>`;
+            analysis += `<li><strong>Our method:</strong> P(1) needs ${bitsP1} bits + P(P(1)+1) needs ${bitsP_P1plus1} bits = ${methodBits} bits</li>`;
+            analysis += `<li><strong>Theoretical minimum:</strong> log₂(${p1 + 1}^${numCoeffs}) ≈ ${theoreticalMin} bits</li>`;
+            analysis += `<li><strong>Overhead:</strong> ${methodBits - theoreticalMin} extra bits (${((methodBits/theoreticalMin - 1) * 100).toFixed(1)}% overhead)</li>`;
+            analysis += '</ol>';
+            
+            document.getElementById('efficiency-analysis').style.display = 'block';
+            document.getElementById('efficiency-steps').innerHTML = analysis;
+            
+            let summary = `Our method uses ${efficiency}% as many bits as direct storage`;
+            if (methodBits > directBits) {
+                summary = `Our method uses ${(methodBits/directBits * 100).toFixed(1)}% more bits than direct storage`;
+            }
+            summary += ` and ${(methodBits/theoreticalMin * 100).toFixed(1)}% of the theoretical minimum.`;
+            
+            document.getElementById('efficiency-summary').textContent = summary;
+        }
+
+        // Event listeners
+        document.getElementById('p1-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                processP1();
+            }
+        });
+
+        document.getElementById('p-p1plus1-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                recoverCoefficients();
+            }
+        });
+    </script>
+</body>
+</html>

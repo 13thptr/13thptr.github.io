@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Polynomial Recovery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; text-align: center; }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .debug {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .candidate {
+            border: 1px solid #28a745;
+            background: #d4edda;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Debug Polynomial Recovery</h1>
+        
+        <div class="section">
+            <h3>Fixed Settings</h3>
+            <p><strong>Transcendental Number:</strong> Liouville base-10</p>
+            <p><strong>Value:</strong> 0.11000100000000000000000100000000000000000000000000000000000000000000000000000000000000000000000001</p>
+        </div>
+
+        <div class="section">
+            <h3>Search Parameters</h3>
+            <label for="target-result">P(Liouville) = </label>
+            <input type="text" id="target-result" placeholder="Enter evaluation result" style="font-family: monospace;">
+            
+            <label for="max-degree">Maximum degree:</label>
+            <input type="number" id="max-degree" min="0" max="5" value="2">
+            
+            <label for="max-coeff">Maximum coefficient:</label>
+            <input type="number" id="max-coeff" min="1" max="10" value="5">
+            
+            <label for="precision">Precision (digits):</label>
+            <input type="number" id="precision" min="5" max="30" value="10">
+            
+            <button onclick="startDebugSearch()">Start Search</button>
+        </div>
+
+        <div class="section">
+            <h3>Debug Output</h3>
+            <div id="debug-output"></div>
+        </div>
+
+        <div class="section">
+            <h3>Results</h3>
+            <div id="results-output"></div>
+        </div>
+    </div>
+
+    <script>
+        const LIOUVILLE = '0.11000100000000000000000100000000000000000000000000000000000000000000000000000000000000000000000001';
+        
+        function debugLog(message) {
+            const debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML += `<div class="debug">${message}</div>`;
+            debugOutput.scrollTop = debugOutput.scrollHeight;
+        }
+        
+        function evaluatePolynomial(coeffs, x) {
+            let result = 0;
+            let power = 1;
+            for (let i = coeffs.length - 1; i >= 0; i--) {
+                result += coeffs[i] * power;
+                power *= x;
+            }
+            return result;
+        }
+        
+        function matchesTarget(value, target, precision) {
+            const valueStr = value.toString();
+            const targetStr = target.toString();
+            
+            debugLog(`Comparing: ${valueStr} vs ${targetStr}`);
+            
+            // Find decimal points
+            const valueDot = valueStr.indexOf('.');
+            const targetDot = targetStr.indexOf('.');
+            
+            // Extract integer parts
+            const valueInt = valueDot === -1 ? valueStr : valueStr.substring(0, valueDot);
+            const targetInt = targetDot === -1 ? targetStr : targetStr.substring(0, targetDot);
+            
+            debugLog(`Integer parts: ${valueInt} vs ${targetInt}`);
+            
+            if (valueInt !== targetInt) {
+                debugLog(`Integer parts don't match`);
+                return false;
+            }
+            
+            // Extract decimal parts
+            const valueDec = valueDot === -1 ? '' : valueStr.substring(valueDot + 1);
+            const targetDec = targetDot === -1 ? '' : targetStr.substring(targetDot + 1);
+            
+            debugLog(`Decimal parts: ${valueDec} vs ${targetDec}`);
+            
+            // Compare exactly 'precision' decimal digits
+            for (let i = 0; i < precision; i++) {
+                const vChar = i < valueDec.length ? valueDec[i] : '0';
+                const tChar = i < targetDec.length ? targetDec[i] : '0';
+                
+                if (vChar !== tChar) {
+                    debugLog(`Mismatch at position ${i}: ${vChar} vs ${tChar}`);
+                    return false;
+                }
+            }
+            
+            debugLog(`MATCH FOUND! Precision: ${precision} digits`);
+            return true;
+        }
+        
+        function* generatePolynomials(degree, maxCoeff) {
+            const coeffs = new Array(degree + 1).fill(0);
+            
+            function* helper(pos) {
+                if (pos === coeffs.length) {
+                    // For degree > 0, ensure leading coefficient is non-zero
+                    if (degree > 0 && coeffs[0] === 0) {
+                        return;
+                    }
+                    yield [...coeffs];
+                    return;
+                }
+                
+                const start = (pos === 0 && degree > 0) ? 1 : 0; // Leading coeff must be non-zero
+                for (let i = start; i <= maxCoeff; i++) {
+                    coeffs[pos] = i;
+                    yield* helper(pos + 1);
+                }
+            }
+            
+            yield* helper(0);
+        }
+        
+        function formatPolynomial(coeffs) {
+            if (coeffs.length === 0) return '0';
+            
+            const degree = coeffs.length - 1;
+            const terms = [];
+            
+            for (let i = 0; i < coeffs.length; i++) {
+                const coeff = coeffs[i];
+                const power = degree - i;
+                
+                if (coeff === 0) continue;
+                
+                let term = '';
+                if (power === 0) {
+                    term = coeff.toString();
+                } else if (power === 1) {
+                    term = coeff === 1 ? 'x' : `${coeff}x`;
+                } else {
+                    term = coeff === 1 ? `x^${power}` : `${coeff}x^${power}`;
+                }
+                
+                terms.push(term);
+            }
+            
+            return terms.length === 0 ? '0' : terms.join(' + ');
+        }
+        
+        function startDebugSearch() {
+            const targetResult = document.getElementById('target-result').value;
+            const maxDegree = parseInt(document.getElementById('max-degree').value);
+            const maxCoeff = parseInt(document.getElementById('max-coeff').value);
+            const precision = parseInt(document.getElementById('precision').value);
+            
+            if (!targetResult) {
+                alert('Please enter the target result');
+                return;
+            }
+            
+            // Clear previous results
+            document.getElementById('debug-output').innerHTML = '';
+            document.getElementById('results-output').innerHTML = '';
+            
+            debugLog(`Starting search...`);
+            debugLog(`Target: ${targetResult}`);
+            debugLog(`Liouville: ${LIOUVILLE}`);
+            debugLog(`Max degree: ${maxDegree}, Max coeff: ${maxCoeff}, Precision: ${precision}`);
+            
+            const liouvilleValue = parseFloat(LIOUVILLE);
+            const candidates = [];
+            let totalChecked = 0;
+            
+            for (let degree = 0; degree <= maxDegree; degree++) {
+                debugLog(`\n--- Checking degree ${degree} ---`);
+                
+                for (const coeffs of generatePolynomials(degree, maxCoeff)) {
+                    totalChecked++;
+                    
+                    const result = evaluatePolynomial(coeffs, liouvilleValue);
+                    
+                    if (totalChecked <= 20) { // Only log first 20 for brevity
+                        debugLog(`Polynomial ${formatPolynomial(coeffs)} [${coeffs.join(',')}] = ${result}`);
+                    }
+                    
+                    if (matchesTarget(result, targetResult, precision)) {
+                        candidates.push({
+                            coefficients: coeffs,
+                            degree: degree,
+                            polynomial: formatPolynomial(coeffs),
+                            result: result
+                        });
+                        
+                        debugLog(`*** CANDIDATE FOUND: ${formatPolynomial(coeffs)} ***`);
+                    }
+                }
+            }
+            
+            debugLog(`\n--- Search Complete ---`);
+            debugLog(`Total polynomials checked: ${totalChecked}`);
+            debugLog(`Candidates found: ${candidates.length}`);
+            
+            // Display results
+            const resultsOutput = document.getElementById('results-output');
+            if (candidates.length === 0) {
+                resultsOutput.innerHTML = '<p>No candidates found.</p>';
+            } else {
+                let html = `<p><strong>${candidates.length} candidate(s) found:</strong></p>`;
+                candidates.forEach((candidate, index) => {
+                    html += `
+                        <div class="candidate">
+                            <h4>Candidate ${index + 1}</h4>
+                            <p><strong>Polynomial:</strong> ${candidate.polynomial}</p>
+                            <p><strong>Coefficients:</strong> [${candidate.coefficients.join(',')}]</p>
+                            <p><strong>Degree:</strong> ${candidate.degree}</p>
+                            <p><strong>Result:</strong> ${candidate.result}</p>
+                        </div>
+                    `;
+                });
+                resultsOutput.innerHTML = html;
+            }
+        }
+        
+        // Pre-fill with identity polynomial result for testing
+        window.addEventListener('load', () => {
+            document.getElementById('target-result').value = LIOUVILLE;
+        });
+    </script>
+</body>
+</html>
